@@ -123,6 +123,11 @@ label_az.move(128,292)
 label_az.resize(LBL_STD_WIDTH, LBL_STD_HEIGHT)
 label_az.setText("{} {}".format(LABEL_AZ_PRE, NO_TARGET))
 label_az.setFont(txt_font)
+label_desc = QLabel(w)
+label_desc.move(TXT_OBJ_NAME_POS_X, TXT_OBJ_NAME_POS_Y - LBL_STD_HEIGHT - MARGIN_STD)
+label_desc.resize(LBL_STD_WIDTH, LBL_STD_HEIGHT)
+label_desc.setText("Astronomical Object to be Tracked")
+label_desc.setFont(txt_font)
 
 # calculate button
 btn_calculate = QPushButton("Calculate", w)
