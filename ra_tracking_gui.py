@@ -1,6 +1,8 @@
-# Skylar Hoffert
-# 10/27/2016
-# gui for tracking objects with pyephem
+# File:		ra_tracking.py
+# Written By:	Skylar Hoffert
+# Modified:	2016_1031
+# Description:	gui for tracking objects with pyephem
+# Dependencies:	pyephem, pyqt4
 
 import sys
 import datetime
