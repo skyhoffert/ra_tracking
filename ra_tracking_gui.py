@@ -79,7 +79,6 @@ def build_label( lbl, posx, posy, wid, ht, font , txt ):
 	lbl.setText(txt)
 
 def thread_calculate( str ):
-	print ( str )
 	if ( obj_to_track ):
 		gs_observer.date = datetime.datetime.utcnow()
 		obj_to_track.compute(gs_observer)
@@ -107,8 +106,8 @@ class Thread_Background( QThread ):
 
 	def run( self ):
 		while True:
-			self.shouldCalc.emit( "hi" )
-			time.sleep( updatePeriod )
+			self.shouldCalc.emit( str(self.updatePeriod) )
+			time.sleep( self.updatePeriod )
 
 # ****************************************************************************
 # main program
