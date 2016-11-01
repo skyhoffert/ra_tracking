@@ -8,11 +8,12 @@ import sys
 import datetime
 import math
 import ephem
+import threading
 from PyQt4.QtGui import *
 
 # ****************************************************************************
 # constants
-APP_WIDTH = 640
+APP_WIDTH = 720
 APP_HEIGHT = 480
 APP_NAME = "Tracking"
 
@@ -33,20 +34,12 @@ LABEL_TXT_SIZE = 12
 
 # margins
 MARGIN_STD = 4
+MARGIN_OUTSIDE = APP_WIDTH / 16
 
 # position of widgets
-BTN_CALCULATE_POS_X = APP_WIDTH / 8
-BTN_CALCULATE_POS_Y = APP_HEIGHT / 4
 BTN_CALCULATE_WIDTH = 128
-BTN_CALCULATE_HEIGHT = 32
-TXT_OBJ_NAME_POS_X = APP_WIDTH / 8
-TXT_OBJ_NAME_POS_Y = APP_HEIGHT / 4 - BTN_CALCULATE_HEIGHT - MARGIN_STD 
-LBL_STD_WIDTH = APP_WIDTH * 3 / 4
+LBL_STD_WIDTH = APP_WIDTH - MARGIN_OUTSIDE*2
 LBL_STD_HEIGHT = 24
-LBL_INSTR_POS_X = APP_WIDTH / 8
-LBL_INSTR_POS_Y = APP_HEIGHT / 8 - LBL_STD_HEIGHT - MARGIN_STD
-LBL_NAME_POS_X = APP_WIDTH / 8
-LBL_NAME_POS_Y = APP_HEIGHT / 4 + LBL_STD_HEIGHT * 4
 
 # other utility vars
 NO_TARGET = "no_target"
@@ -60,6 +53,8 @@ gs_observer = ephem.Observer()
 # Description:	Return the appropriate ephem object
 # Inputs:	str = string containing the ephem object name
 def find_ephem_obj( str ):
+	if ( not str ):
+		return
 	if ( str == "moon" ):
 		return ephem.Moon()
 	elif ( str == "sun" ):
@@ -84,6 +79,14 @@ def calculate():
 		label_elev.setText("{} {}".format(LABEL_ELEV_PRE, NO_TARGET))
 		label_az.setText("{} {}".format(LABEL_AZ_PRE, NO_TARGET))
 
+def build_label( lbl, posx, posy, wid, ht, font , txt ):
+	lbl.move(posx, posy)
+	lbl.resize(wid, ht)
+	lbl.setFont(font)
+	lbl.setText(txt)
+
+
+
 # ****************************************************************************
 # main program
 
@@ -104,35 +107,24 @@ gs_observer.elevation = GS_ELEV
 # set up GUI components
 # textbox for entry
 txt_obj_name = QLineEdit(w)
-txt_obj_name.move(TXT_OBJ_NAME_POS_X, TXT_OBJ_NAME_POS_Y)
-txt_obj_name.resize(LBL_STD_WIDTH, 32)
+txt_obj_name.move(MARGIN_OUTSIDE, APP_HEIGHT - MARGIN_OUTSIDE)
+txt_obj_name.resize(LBL_STD_WIDTH - BTN_CALCULATE_WIDTH - MARGIN_STD, LBL_STD_HEIGHT)
+txt_obj_name.returnPressed.connect(calculate)
 
 # build the labels
 label_name = QLabel(w)
-label_name.move(LBL_NAME_POS_X, LBL_NAME_POS_Y)
-label_name.resize(LBL_STD_WIDTH, LBL_STD_HEIGHT)
-label_name.setText("Push calculate to go!")
-label_name.setFont(txt_font)
+build_label(label_name, MARGIN_OUTSIDE, MARGIN_OUTSIDE, LBL_STD_WIDTH, LBL_STD_HEIGHT, txt_font, "Push calculate to go!")
 label_elev = QLabel(w)
-label_elev.move(128,268)
-label_elev.resize(LBL_STD_WIDTH, LBL_STD_HEIGHT)
-label_elev.setText("{} {}".format(LABEL_ELEV_PRE, NO_TARGET))
-label_elev.setFont(txt_font)
+build_label(label_elev, MARGIN_OUTSIDE, MARGIN_OUTSIDE + LBL_STD_HEIGHT + MARGIN_STD, LBL_STD_WIDTH, LBL_STD_HEIGHT, txt_font, "{} {}".format(LABEL_ELEV_PRE, NO_TARGET))
 label_az = QLabel(w)
-label_az.move(128,292)
-label_az.resize(LBL_STD_WIDTH, LBL_STD_HEIGHT)
-label_az.setText("{} {}".format(LABEL_AZ_PRE, NO_TARGET))
-label_az.setFont(txt_font)
+build_label(label_az, MARGIN_OUTSIDE, MARGIN_OUTSIDE + LBL_STD_HEIGHT*2 + MARGIN_STD*2, LBL_STD_WIDTH, LBL_STD_HEIGHT, txt_font, "{} {}".format(LABEL_AZ_PRE, NO_TARGET))
 label_desc = QLabel(w)
-label_desc.move(TXT_OBJ_NAME_POS_X, TXT_OBJ_NAME_POS_Y - LBL_STD_HEIGHT - MARGIN_STD)
-label_desc.resize(LBL_STD_WIDTH, LBL_STD_HEIGHT)
-label_desc.setText("Astronomical Object to be Tracked")
-label_desc.setFont(txt_font)
+build_label(label_desc, MARGIN_OUTSIDE, APP_HEIGHT - MARGIN_OUTSIDE - LBL_STD_HEIGHT - MARGIN_STD, LBL_STD_WIDTH, LBL_STD_HEIGHT, txt_font, "Astronomical Object to be Tracked")
 
 # calculate button
 btn_calculate = QPushButton("Calculate", w)
-btn_calculate.resize(BTN_CALCULATE_WIDTH, BTN_CALCULATE_HEIGHT)
-btn_calculate.move(BTN_CALCULATE_POS_X, BTN_CALCULATE_POS_Y)
+btn_calculate.resize(BTN_CALCULATE_WIDTH, LBL_STD_HEIGHT)
+btn_calculate.move(APP_WIDTH - MARGIN_OUTSIDE - BTN_CALCULATE_WIDTH, APP_HEIGHT - MARGIN_OUTSIDE)
 btn_calculate.clicked.connect(calculate)
 
 w.show()
