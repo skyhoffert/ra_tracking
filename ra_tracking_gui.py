@@ -24,7 +24,7 @@ gs_lat = 37.229852 * math.pi / 180
 gs_elev = 620
 
 # time between updates, in seconds
-UPDATE_PERIOD = 1
+update_period = 1
 
 # for the labels
 LABEL_ELEV_PRE = "Elevation Angle: "
@@ -87,6 +87,24 @@ def thread_calculate():
 		label_elev.setText("{} {}".format(LABEL_ELEV_PRE, NO_TARGET))
 		label_az.setText("{} {}".format(LABEL_AZ_PRE, NO_TARGET))
 	
+# ****************************************************************************
+# additional classes
+class Thread_Background( QThread ):
+	
+	shouldCalc = pyqtSignal( object )
+	updatePeriod = 1
+	
+	def __init__( self, per ):
+		QThread.__init__( self )
+		self.updatePeriod = per
+
+	def setUpdatePeriod( self, per ):
+		self.updatePeriod = per
+
+	def run( self ):
+		while True:
+			self.shouldCalc.emit()
+			time.sleep( updatePeriod )
 
 # ****************************************************************************
 # main program
@@ -131,4 +149,5 @@ btn_calculate.clicked.connect(calculate)
 w.show()
 app.exec_()
 
-calcThread = QThread()
+calcThread = Thread_Background( update_period )
+
