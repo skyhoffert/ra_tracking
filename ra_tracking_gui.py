@@ -9,7 +9,9 @@ import datetime
 import math
 import ephem
 import threading
+import time
 from PyQt4.QtGui import *
+from PyQt4.QtCore import *
 
 # ****************************************************************************
 # constants
@@ -47,6 +49,7 @@ NO_TARGET = "no_target"
 # ****************************************************************************
 # global variables
 gs_observer = ephem.Observer()
+obj_to_track = ephem.Moon()
 
 # ****************************************************************************
 # functions
@@ -75,7 +78,8 @@ def build_label( lbl, posx, posy, wid, ht, font , txt ):
 	lbl.setFont(font)
 	lbl.setText(txt)
 
-def thread_calculate():
+def thread_calculate( str ):
+	print ( str )
 	if ( obj_to_track ):
 		gs_observer.date = datetime.datetime.utcnow()
 		obj_to_track.compute(gs_observer)
@@ -103,7 +107,7 @@ class Thread_Background( QThread ):
 
 	def run( self ):
 		while True:
-			self.shouldCalc.emit()
+			self.shouldCalc.emit( "hi" )
 			time.sleep( updatePeriod )
 
 # ****************************************************************************
@@ -146,8 +150,9 @@ btn_calculate.resize(BTN_CALCULATE_WIDTH, LBL_STD_HEIGHT)
 btn_calculate.move(APP_WIDTH - MARGIN_OUTSIDE - BTN_CALCULATE_WIDTH, APP_HEIGHT - MARGIN_OUTSIDE)
 btn_calculate.clicked.connect(calculate)
 
+calcThread = Thread_Background( update_period )
+calcThread.shouldCalc.connect( thread_calculate )
+calcThread.start()
+
 w.show()
 app.exec_()
-
-calcThread = Thread_Background( update_period )
-
