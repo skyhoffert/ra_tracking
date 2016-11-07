@@ -18,10 +18,10 @@ APP_HEIGHT = 480
 APP_NAME = "Tracking"
 
 # ground station constants
-GS_LON = -80.439639 * math.pi / 180
-GS_LAT = 37.229852 * math.pi / 180
+gs_lon = -80.439639 * math.pi / 180
+gs_lat = 37.229852 * math.pi / 180
 # altitude above sea level
-GS_ELEV = 620
+gs_elev = 620
 
 # time between updates, in seconds
 UPDATE_PERIOD = 1
@@ -67,6 +67,7 @@ def find_ephem_obj( str ):
 		return ephem.star( str )
 
 def calculate():
+	gs_lon = txt_lon
 	obj_to_track = find_ephem_obj(txt_obj_name.text())
 	if ( obj_to_track ):
 		gs_observer.date = datetime.datetime.utcnow()
@@ -86,7 +87,6 @@ def build_label( lbl, posx, posy, wid, ht, font , txt ):
 	lbl.setText(txt)
 
 
-
 # ****************************************************************************
 # main program
 
@@ -100,9 +100,9 @@ w.resize(APP_WIDTH, APP_HEIGHT)
 txt_font = QFont(LABEL_TXT_FONT, LABEL_TXT_SIZE, QFont.Bold)
 
 # init the ground station
-gs_observer.lat = GS_LAT
-gs_observer.lon = GS_LON
-gs_observer.elevation = GS_ELEV
+gs_observer.lat = gs_lat
+gs_observer.lon = gs_lon
+gs_observer.elevation = gs_elev
 
 # set up GUI components
 # textbox for entry
@@ -110,6 +110,19 @@ txt_obj_name = QLineEdit(w)
 txt_obj_name.move(MARGIN_OUTSIDE, APP_HEIGHT - MARGIN_OUTSIDE)
 txt_obj_name.resize(LBL_STD_WIDTH - BTN_CALCULATE_WIDTH - MARGIN_STD, LBL_STD_HEIGHT)
 txt_obj_name.returnPressed.connect(calculate)
+
+# textboxes for gs lat
+txt_lat = QLineEdit(w)
+txt_lat.move(MARGIN_OUTSIDE, APP_HEIGHT - MARGIN_OUTSIDE - LBL_STD_HEIGHT*2 - MARGIN_STD*2)
+txt_lat.resize(LBL_STD_WIDTH/2, LBL_STD_HEIGHT)
+txt_lat.returnPressed.connect(calculate)
+txt_lat.setText(str(gs_lat * 180 / math.pi))
+
+txt_lon = QLineEdit(w)
+txt_lon.move(MARGIN_OUTSIDE, APP_HEIGHT - MARGIN_OUTSIDE - LBL_STD_HEIGHT*3 - MARGIN_STD*3)
+txt_lon.resize(LBL_STD_WIDTH/2, LBL_STD_HEIGHT)
+txt_lon.returnPressed.connect(calculate)
+txt_lon.setText(str(gs_lon * 180 / math.pi))
 
 # build the labels
 label_name = QLabel(w)
