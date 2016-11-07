@@ -67,7 +67,10 @@ def find_ephem_obj( str ):
 		return ephem.star( str )
 
 def calculate():
-	gs_lon = txt_lon
+	gs_lon = float(txt_lon.text()) * math.pi / 180
+	gs_lat = float(txt_lat.text()) * math.pi / 180
+	gs_observer.lat = gs_lat
+	gs_observer.lon = gs_lon
 	obj_to_track = find_ephem_obj(txt_obj_name.text())
 	if ( obj_to_track ):
 		gs_observer.date = datetime.datetime.utcnow()
@@ -113,14 +116,14 @@ txt_obj_name.returnPressed.connect(calculate)
 
 # textboxes for gs lat
 txt_lat = QLineEdit(w)
-txt_lat.move(MARGIN_OUTSIDE, APP_HEIGHT - MARGIN_OUTSIDE - LBL_STD_HEIGHT*2 - MARGIN_STD*2)
-txt_lat.resize(LBL_STD_WIDTH/2, LBL_STD_HEIGHT)
+txt_lat.move(MARGIN_OUTSIDE + LBL_STD_WIDTH/4 + MARGIN_STD, APP_HEIGHT - MARGIN_OUTSIDE - LBL_STD_HEIGHT*3 - MARGIN_STD*3)
+txt_lat.resize(LBL_STD_WIDTH/4, LBL_STD_HEIGHT)
 txt_lat.returnPressed.connect(calculate)
 txt_lat.setText(str(gs_lat * 180 / math.pi))
 
 txt_lon = QLineEdit(w)
-txt_lon.move(MARGIN_OUTSIDE, APP_HEIGHT - MARGIN_OUTSIDE - LBL_STD_HEIGHT*3 - MARGIN_STD*3)
-txt_lon.resize(LBL_STD_WIDTH/2, LBL_STD_HEIGHT)
+txt_lon.move(MARGIN_OUTSIDE + LBL_STD_WIDTH/4 + MARGIN_STD, APP_HEIGHT - MARGIN_OUTSIDE - LBL_STD_HEIGHT*2 - MARGIN_STD*2)
+txt_lon.resize(LBL_STD_WIDTH/4, LBL_STD_HEIGHT)
 txt_lon.returnPressed.connect(calculate)
 txt_lon.setText(str(gs_lon * 180 / math.pi))
 
@@ -133,6 +136,13 @@ label_az = QLabel(w)
 build_label(label_az, MARGIN_OUTSIDE, MARGIN_OUTSIDE + LBL_STD_HEIGHT*2 + MARGIN_STD*2, LBL_STD_WIDTH, LBL_STD_HEIGHT, txt_font, "{} {}".format(LABEL_AZ_PRE, NO_TARGET))
 label_desc = QLabel(w)
 build_label(label_desc, MARGIN_OUTSIDE, APP_HEIGHT - MARGIN_OUTSIDE - LBL_STD_HEIGHT - MARGIN_STD, LBL_STD_WIDTH, LBL_STD_HEIGHT, txt_font, "Astronomical Object to be Tracked")
+# gs labels
+label_desc_gs = QLabel(w)
+build_label(label_desc_gs, MARGIN_OUTSIDE, APP_HEIGHT - MARGIN_OUTSIDE - LBL_STD_HEIGHT*4 - MARGIN_STD*4, LBL_STD_WIDTH, LBL_STD_HEIGHT, txt_font, "Ground Station Location")
+label_gs_lat = QLabel(w)
+build_label(label_gs_lat, MARGIN_OUTSIDE, APP_HEIGHT - MARGIN_OUTSIDE - LBL_STD_HEIGHT*3 - MARGIN_STD*3, LBL_STD_WIDTH/4, LBL_STD_HEIGHT, txt_font, "Latitude:")
+label_gs_lon = QLabel(w)
+build_label(label_gs_lon, MARGIN_OUTSIDE, APP_HEIGHT - MARGIN_OUTSIDE - LBL_STD_HEIGHT*2 - MARGIN_STD*2, LBL_STD_WIDTH/4, LBL_STD_HEIGHT, txt_font, "Longitude:")
 
 # calculate button
 btn_calculate = QPushButton("Calculate", w)
