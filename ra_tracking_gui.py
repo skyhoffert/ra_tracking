@@ -9,9 +9,7 @@ import datetime
 import math
 import ephem
 import threading
-import time
 from PyQt4.QtGui import *
-from PyQt4.QtCore import *
 
 # ****************************************************************************
 # constants
@@ -20,13 +18,13 @@ APP_HEIGHT = 480
 APP_NAME = "Tracking"
 
 # ground station constants
-gs_lon = -80.439639 * math.pi / 180
-gs_lat = 37.229852 * math.pi / 180
+GS_LON = -80.439639 * math.pi / 180
+GS_LAT = 37.229852 * math.pi / 180
 # altitude above sea level
-gs_elev = 620
+GS_ELEV = 620
 
 # time between updates, in seconds
-update_period = 1
+UPDATE_PERIOD = 1
 
 # for the labels
 LABEL_ELEV_PRE = "Elevation Angle: "
@@ -49,7 +47,6 @@ NO_TARGET = "no_target"
 # ****************************************************************************
 # global variables
 gs_observer = ephem.Observer()
-obj_to_track = ephem.Moon()
 
 # ****************************************************************************
 # functions
@@ -71,14 +68,6 @@ def find_ephem_obj( str ):
 
 def calculate():
 	obj_to_track = find_ephem_obj(txt_obj_name.text())
-
-def build_label( lbl, posx, posy, wid, ht, font , txt ):
-	lbl.move(posx, posy)
-	lbl.resize(wid, ht)
-	lbl.setFont(font)
-	lbl.setText(txt)
-
-def thread_calculate( str ):
 	if ( obj_to_track ):
 		gs_observer.date = datetime.datetime.utcnow()
 		obj_to_track.compute(gs_observer)
@@ -89,25 +78,14 @@ def thread_calculate( str ):
 		label_name.setText(NO_TARGET)
 		label_elev.setText("{} {}".format(LABEL_ELEV_PRE, NO_TARGET))
 		label_az.setText("{} {}".format(LABEL_AZ_PRE, NO_TARGET))
-	
-# ****************************************************************************
-# additional classes
-class Thread_Background( QThread ):
-	
-	shouldCalc = pyqtSignal( object )
-	updatePeriod = 1
-	
-	def __init__( self, per ):
-		QThread.__init__( self )
-		self.updatePeriod = per
 
-	def setUpdatePeriod( self, per ):
-		self.updatePeriod = per
+def build_label( lbl, posx, posy, wid, ht, font , txt ):
+	lbl.move(posx, posy)
+	lbl.resize(wid, ht)
+	lbl.setFont(font)
+	lbl.setText(txt)
 
-	def run( self ):
-		while True:
-			self.shouldCalc.emit( str(self.updatePeriod) )
-			time.sleep( self.updatePeriod )
+
 
 # ****************************************************************************
 # main program
@@ -122,9 +100,9 @@ w.resize(APP_WIDTH, APP_HEIGHT)
 txt_font = QFont(LABEL_TXT_FONT, LABEL_TXT_SIZE, QFont.Bold)
 
 # init the ground station
-gs_observer.lat = gs_lat
-gs_observer.lon = gs_lon
-gs_observer.elevation = gs_elev
+gs_observer.lat = GS_LAT
+gs_observer.lon = GS_LON
+gs_observer.elevation = GS_ELEV
 
 # set up GUI components
 # textbox for entry
@@ -149,9 +127,6 @@ btn_calculate.resize(BTN_CALCULATE_WIDTH, LBL_STD_HEIGHT)
 btn_calculate.move(APP_WIDTH - MARGIN_OUTSIDE - BTN_CALCULATE_WIDTH, APP_HEIGHT - MARGIN_OUTSIDE)
 btn_calculate.clicked.connect(calculate)
 
-calcThread = Thread_Background( update_period )
-calcThread.shouldCalc.connect( thread_calculate )
-calcThread.start()
-
 w.show()
 app.exec_()
+
