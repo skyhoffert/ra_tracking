@@ -10,6 +10,7 @@ import math
 import ephem
 import threading
 from PyQt4.QtGui import *
+from PyQt4.QtCore import *
 
 # ****************************************************************************
 # constants
@@ -149,6 +150,16 @@ btn_calculate = QPushButton("Calculate", w)
 btn_calculate.resize(BTN_CALCULATE_WIDTH, LBL_STD_HEIGHT)
 btn_calculate.move(APP_WIDTH - MARGIN_OUTSIDE - BTN_CALCULATE_WIDTH, APP_HEIGHT - MARGIN_OUTSIDE)
 btn_calculate.clicked.connect(calculate)
+
+# other pretty stuff
+painter = QPainter()
+painter.begin(w)
+
+pen = QPen(Qt.black, 2, Qt.SolidLine)
+painter.setPen(pen)
+painter.drawLine(20, 20, 200, 50)
+
+painter.end()
 
 w.show()
 app.exec_()
