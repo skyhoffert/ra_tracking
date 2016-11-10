@@ -65,7 +65,10 @@ def find_ephem_obj( str ):
 	elif ( str == "andromeda" or str == "m31" ):
 		return ephem.readdb( "M31,f|G,0:42:44,+41:16:8,4.16,2000,11433|3700|35" )
 	else:
-		return ephem.star( str )
+		try:
+			obj =  ephem.star( str )
+		except KeyError:
+			return None
 
 def calculate():
 	gs_lon = float(txt_lon.text()) * math.pi / 180
@@ -160,6 +163,10 @@ painter.setPen(pen)
 painter.drawLine(20, 20, 200, 50)
 
 painter.end()
+
+timer = QTimer()
+timer.timeout.connect(calculate)
+timer.start(1000)
 
 w.show()
 app.exec_()
