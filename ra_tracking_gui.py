@@ -154,20 +154,12 @@ btn_calculate.resize(BTN_CALCULATE_WIDTH, LBL_STD_HEIGHT)
 btn_calculate.move(APP_WIDTH - MARGIN_OUTSIDE - BTN_CALCULATE_WIDTH, APP_HEIGHT - MARGIN_OUTSIDE)
 btn_calculate.clicked.connect(calculate)
 
-# other pretty stuff
-painter = QPainter()
-painter.begin(w)
-
-pen = QPen(Qt.black, 2, Qt.SolidLine)
-painter.setPen(pen)
-painter.drawLine(20, 20, 200, 50)
-
-painter.end()
-
+# timer for periodic update
 timer = QTimer()
 timer.timeout.connect(calculate)
-timer.start(1000)
+timer.start(UPDATE_PERIOD * 1000)
 
+# start the app
 w.show()
 app.exec_()
 
