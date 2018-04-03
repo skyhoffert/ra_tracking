@@ -24,39 +24,41 @@ def compute_angles(date=None):
 	tle_rec = ephem.readtle(name, line1, line2)
 
 	# make a new ephem observer
-	BB = ephem.Observer()
-	BB.lon = 37.2725
-	BB.lat = -80.4327
-	BB.elev = 400
-	BB.date = date
+	obs = ephem.Observer()
+	obs.lon = 37.2725
+	obs.lat = -80.4327
+	obs.elev = 400
+	obs.date = date
 
 	# compute the orbit trajectory stuff
-	tle_rec.compute(BB)
+	tle_rec.compute(obs)
 
 	# find the next pass
-	next_pass = BB.next_pass(tle_rec)
+	next_pass = obs.next_pass(tle_rec)
 
 	# print results
 	print('Next pass: ', str(next_pass[0]))
 
 	# move the current time to the next pass
-	BB.date = next_pass[0]
-	tle_rec.compute(BB)
+	obs.date = next_pass[0]
+	tle_rec.compute(obs)
 
+	# empty lists to start
 	alts  = []
 	azs   = []
 	times = []
 
+	# loop through entire pass
 	while tle_rec.alt > 0:
 		# save results to list in radians
 		alts.append(math.degrees(float(tle_rec.alt)))
 		azs.append(math.degrees(float(tle_rec.az)))
-		times.append(BB.date.datetime())
+		times.append(obs.date.datetime())
 
 		# compute next second timestep
-		BB.date = BB.date.datetime() + datetime.timedelta(seconds=1)
+		obs.date = obs.date.datetime() + datetime.timedelta(seconds=1)
 		# compute next pointing angle
-		tle_rec.compute(BB)
+		tle_rec.compute(obs)
 
 	# return a tuple with the lists
 	# format is (az, el, time)
